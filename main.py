@@ -6,8 +6,33 @@ from scipy.optimize import minimize
 
 WIDTH = "w-20"
 
+DESCRIPTION = """
+#### обозначения параметров
+**c** - закупочная цена единицы товара
+
+**p (p > c)** - цена единицы товара для покупателя в магазине
+
+**s** - потери на единицу товара при дефиците
+
+**T1** - момент времени,когда первая партия товара реализована
+
+**T** - момент времени, когда реализована вся заказанная партия товара
+
+**Q** - общий объем всего заказанного у производителя товара
+
+**I(t)** - текущий уровень запаса товара (дефицита товара)
+
+**D(t)** - мгновенный спрос на товар
+
+**V** - потери, связанные с дефицитом товара в торговой фирме;
+
+**TP(T1, T)** - доход торговой фирмы.
+"""
+
 
 def clamp(value, min_value, max_value):
+    if value is None:
+        return min_value
     return max(min(value, max_value), min_value)
 
 
@@ -107,8 +132,6 @@ class App:
         self.plot.update()
 
     def update_boundaries(self, argument):
-        if not (self.T1.value is not None and self.T.value is not None and self.tn.value is not None):
-            return
         if argument.sender == self.T1:
             self.T1.value = clamp(argument.value, 0, self.tn.value)
             self.tn.min = self.model.T1
@@ -147,7 +170,7 @@ class App:
                                                                                                         'c').on_value_change(
                         self.update_plot)
                     ui.number(label='s', precision=4, step=100).classes(WIDTH).tooltip(
-                        'издержка на единицу товара при дефиците').bind_value(self.model,
+                        'потери на единицу товара при дефиците').bind_value(self.model,
                                                                               's').on_value_change(
                         self.update_plot)
         with ui.row():
@@ -178,6 +201,8 @@ class App:
                     ui.button('посчитать оптимальные T1, T', on_click=lambda: self.set_optimal())
                     ui.label().bind_text(self, "optimal")
 
+            with ui.card():
+                ui.markdown(DESCRIPTION)
 
 app = App()
 ui.run()
