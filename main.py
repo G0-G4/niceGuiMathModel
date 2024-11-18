@@ -94,7 +94,8 @@ class Model:
         return (self.p - self.c) * self._Q(T1, T) - self._V(T1, T)
 
     def optimize(self):
-        return minimize(lambda x: -self._TP(x[0], x[1]), np.array([0, 1]), bounds=[(0, self.tn), (self.tn, self.T)])
+        return minimize(lambda x: -self._TP(x[0], x[1]), np.array([0, 1]), bounds=[(0, self.tn), (self.tn, self.T)],
+                        method='L-BFGS-B')
 
     def update(self):
         if not self.check_all_set():
